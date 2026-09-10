@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -52,17 +52,17 @@ api.interceptors.response.use(
 
 // Authentication APIs
 export const authAPI = {
-  login: (identifier: string, password: string) => 
+  login: (identifier: string, password: string) =>
     api.post('/auth/login', { identifier, password }),
-  register: (role: string, userData: any) => 
+  register: (role: string, userData: any) =>
     api.post('/auth/register', { role, ...userData }),
   logout: () => api.post('/auth/logout'),
   getProfile: (userID: number) => api.get(`/auth/profile/${userID}`),
-  updateProfile: (userID: number, updates: any) => 
+  updateProfile: (userID: number, updates: any) =>
     api.put(`/auth/profile/${userID}`, updates),
-  changePassword: (userID: number, currentPassword: string, newPassword: string) => 
+  changePassword: (userID: number, currentPassword: string, newPassword: string) =>
     api.put(`/auth/password/${userID}`, { currentPassword, newPassword }),
-  checkIdentifier: (type: string, value: string) => 
+  checkIdentifier: (type: string, value: string) =>
     api.get(`/auth/check?type=${type}&value=${value}`),
   getAllUsers: () => api.get('/auth/users'),
   deleteUser: (userId: number) => api.delete(`/auth/users/${userId}`),
@@ -121,11 +121,11 @@ export const instituteAPI = {
 export const choiceAPI = {
   getByCandidate: (candidateId: number) => api.get(`/choices/candidate/${candidateId}`),
   add: (data: any) => api.post('/choices', data),
-  updateOrder: (choiceId: number, newChoiceNumber: number) => 
+  updateOrder: (choiceId: number, newChoiceNumber: number) =>
     api.put(`/choices/${choiceId}/order`, { newChoiceNumber }),
-  reorder: (candidateId: number, choices: any[]) => 
+  reorder: (candidateId: number, choices: any[]) =>
     api.post('/choices/reorder', { candidateId, choices }),
-  lock: (candidateId: number, lockStatus: boolean) => 
+  lock: (candidateId: number, lockStatus: boolean) =>
     api.post('/choices/lock', { candidateId, lockStatus }),
   delete: (choiceId: number) => api.delete(`/choices/${choiceId}`),
   deleteAll: (candidateId: number) => api.delete(`/choices/candidate/${candidateId}/all`),
@@ -141,7 +141,7 @@ export const allocationAPI = {
   getByRound: (roundId: number) => api.get(`/allocations/round/${roundId}`),
   create: (data: any) => api.post('/allocations', data),
   update: (allocationId: number, data: any) => api.put(`/allocations/${allocationId}`, data),
-  updateFeeStatus: (allocationId: number, status: string) => 
+  updateFeeStatus: (allocationId: number, status: string) =>
     api.put(`/allocations/${allocationId}/fee-status`, { status }),
   delete: (allocationId: number) => api.delete(`/allocations/${allocationId}`),
 };
@@ -159,9 +159,9 @@ export const seatMatrixAPI = {
   getAll: () => api.get('/seat-matrix'),
   getByInstitute: (instituteCode: string) => api.get(`/seat-matrix/institute/${instituteCode}`),
   create: (data: any) => api.post('/seat-matrix', data),
-  update: (instituteCode: string, programCode: string, data: any) => 
+  update: (instituteCode: string, programCode: string, data: any) =>
     api.put(`/seat-matrix/${instituteCode}/${programCode}`, data),
-  delete: (instituteCode: string, programCode: string, data: any) => 
+  delete: (instituteCode: string, programCode: string, data: any) =>
     api.delete(`/seat-matrix/${instituteCode}/${programCode}`, { data }),
 };
 
@@ -169,7 +169,7 @@ export const seatMatrixAPI = {
 export const ranksAPI = {
   getAll: () => api.get('/opening-closing-ranks'),
   getByRound: (roundId: number) => api.get(`/opening-closing-ranks/round/${roundId}`),
-  searchByRank: (rank: number, category: string) => 
+  searchByRank: (rank: number, category: string) =>
     api.get(`/opening-closing-ranks/search?rank=${rank}&category=${category}`),
   create: (data: any) => api.post('/opening-closing-ranks', data),
   update: (ocrId: number, data: any) => api.put(`/opening-closing-ranks/${ocrId}`, data),
