@@ -1,0 +1,61 @@
+services:
+  database:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./DBMS_TermProject.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./authentication.sql:/docker-entrypoint-initdb.d/02-authentication.sql:ro
+      - ./insert_sample_data.sql:/docker-entrypoint-initdb.d/03-sample-data.sql:ro
+
+    networks:
+    - backend-network
+
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+
+  backend:
+    build: ./server
+    restart: unless-stopped
+    environment:
+      DB_HOST: database
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - backend-network
+      - frontend-network
+
+
+  frontend:
+    build: ./client
+    restart: unless-stopped
+    ports:
+      - "80:8080"
+    networks:
+      - frontend-network
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  db_data:
+
+networks:
+  frontend-network:
+    driver: bridge
+  backend-network:
+    driver: bridge
